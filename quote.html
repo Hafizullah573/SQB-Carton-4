@@ -1,9 +1,9 @@
 
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -17,10 +17,10 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
+
 <!-- Top Bar Start -->
     <div class="top-bar">
         <div class="container">
@@ -134,37 +134,28 @@
 
     </nav>
     <!-- Navbar End -->
-
 <!-- PAGE HEADER -->
 <section class="page-banner">
-
     <div class="container">
-
         <h1>درخواست قیمت</h1>
-
-        <p>فرم زیر را پر کنید تا قیمت دقیق برای شما ارسال شود</p>
-
+        <p>فرم زیر را پر کنید تا قیمت برای شما ارسال شود</p>
     </div>
-
 </section>
 
-<!-- QUOTE SECTION -->
+<!-- FORM -->
 <section class="quote-section py-5">
-
     <div class="container">
-
         <div class="row justify-content-center">
-
             <div class="col-lg-8">
 
                 <div class="quote-form">
 
-                    <form>
+                    <!-- ✔ فقط EmailJS (بدون FormSubmit) -->
+                    <form id="contactForm">
 
-                        <!-- Product Type -->
                         <div class="mb-3">
                             <label>نوع کارتن</label>
-                            <select class="form-control">
+                            <select class="form-control" name="product_type">
                                 <option>کارتن سه لایه</option>
                                 <option>کارتن پنج لایه</option>
                                 <option>کارتن چاپی</option>
@@ -172,64 +163,56 @@
                             </select>
                         </div>
 
-                        <!-- Dimensions -->
                         <div class="row">
-
                             <div class="col-md-4 mb-3">
-                                <label>طول (cm)</label>
-                                <input type="number" class="form-control">
+                                <label>طول</label>
+                                <input type="number" class="form-control" name="length" required>
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label>عرض (cm)</label>
-                                <input type="number" class="form-control">
+                                <label>عرض</label>
+                                <input type="number" class="form-control" name="width" required>
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label>ارتفاع (cm)</label>
-                                <input type="number" class="form-control">
+                                <label>ارتفاع</label>
+                                <input type="number" class="form-control" name="height" required>
                             </div>
-
                         </div>
 
-                        <!-- Quantity -->
                         <div class="mb-3">
                             <label>تعداد</label>
-                            <input type="number" class="form-control">
+                            <input type="number" class="form-control" name="quantity" required>
                         </div>
 
-                        <!-- Customer Info -->
                         <div class="row">
-
                             <div class="col-md-6 mb-3">
-                                <label>نام</label>
-                                <input type="text" class="form-control">
+                                <label>اسم کارتن</label>
+                                <input type="text" class="form-control" name="carton_name" required>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label>نام شرکت</label>
-                                <input type="text" class="form-control">
+                                <label>شرکت</label>
+                                <input type="text" class="form-control" name="company_name">
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label>شماره تماس</label>
-                                <input type="text" class="form-control">
+                                <label>شماره</label>
+                                <input type="text" class="form-control" name="phone" required>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label>ایمیل</label>
-                                <input type="email" class="form-control">
+                                <input type="email" class="form-control" name="email" required>
                             </div>
-
+                            
                         </div>
 
-                        <!-- Notes -->
                         <div class="mb-3">
-                            <label>توضیحات اضافی</label>
-                            <textarea class="form-control" rows="4"></textarea>
+                            <label>توضیحات</label>
+                            <textarea class="form-control" rows="4" name="notes"></textarea>
                         </div>
 
-                        <!-- Submit -->
                         <button type="submit" class="btn btn-warning btn-lg w-100">
                             ارسال درخواست قیمت
                         </button>
@@ -239,11 +222,8 @@
                 </div>
 
             </div>
-
         </div>
-
     </div>
-
 </section>
 
 <!-- FOOTER -->
@@ -405,33 +385,37 @@
 
 </footer>
 
+<!-- ✔ EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script>
-    function updateTime(){
+(function () {
+    emailjs.init("wxNY0RZ65WUApe2wP"); // Public Key
+})();
 
-    const now = new Date();
+document.getElementById("contactForm").addEventListener("submit", function (e) {
+    e.preventDefault();
 
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    };
+    const btn = this.querySelector("button[type='submit']");
+    const oldText = btn.innerText;
 
-    document.getElementById("live-time").innerHTML =
-        now.toLocaleString('en-US', options);
+    btn.disabled = true;
+    btn.innerText = "در حال ارسال...";
 
-}
-
-setInterval(updateTime,1000);
-
-updateTime();
-
-    
-    </script>
+    emailjs.sendForm("service_blfq8qa", "template_hsm3m8h", this)
+        .then(() => {
+            alert("درخواست با موفقیت ارسال شد!");
+            this.reset();
+        })
+        .catch((err) => {
+            alert("خطا در ارسال: " + JSON.stringify(err));
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = oldText;
+        });
+});
+</script>
 
 </body>
 </html>
-
